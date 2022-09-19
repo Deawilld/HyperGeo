@@ -12,7 +12,21 @@ public:
 		}
 	}
 
-	const T& operator[](int index) const {
+	Vector(const Vector& vec) {
+		for (int i = 0; i < size; i++) {
+			components[i] = vec[i];
+		}
+	}
+
+	Vector(std::initializer_list<T> vals) {
+		auto it = vals.begin();
+		for (int i = 0; i < std::min(size, (int)vals.size()); i++) {
+			components[i] = *it;
+			it++;
+		}
+	}
+
+	const T operator[](int index) const {
 		return (index < size) ? components[index] : 0;
 	}
 
@@ -22,7 +36,7 @@ public:
 
 	friend Vector operator+(const Vector& v1, const Vector& v2) {
 		Vector res;
-		for (int i = 0; i < res.size; i++) {
+		for (int i = 0; i < size; i++) {
 			res[i] = v1[i] + v2[i];
 		}
 		return res;
@@ -69,7 +83,7 @@ public:
 		return *this;
 	}
 
-	T length() {
+	T length() const {
 		T sqsum = 0;
 		for (int i = 0; i < size; i++) {
 			sqsum += pow(components[i], 2);
@@ -77,7 +91,7 @@ public:
 		return sqrt(sqsum);
 	}
 
-	Vector toUnitVec() {
+	Vector toUnitVec() const {
 		Vector vec = *this;
 		T len = length();
 		for (int i = 0; i < size; i++) {
@@ -85,5 +99,24 @@ public:
 		}
 		return vec;
 	}
+
+	template<int toSize>
+	Vector<toSize, T> cast() const {
+		Vector<toSize, T> result;
+		for (int i = 0; i < std::min(size, toSize); i++) {
+			result[i] = components[i];
+		}
+		return result;
+	}
+	template<int toSize>
+	operator Vector<toSize, T>() const {
+		Vector<toSize, T> result;
+		for (int i = 0; i < std::min(size, toSize); i++) {
+			result[i] = components[i];
+		}
+		return result;
+	}
 };
-using Vector3 = Vector<3>;
+using Vector3D = Vector<3>;
+static const int MAX_DIMS = 5;
+using VectorND = Vector<MAX_DIMS>;

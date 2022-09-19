@@ -1,15 +1,16 @@
 #pragma once
 
 #include <vector>
+#include "Vector.h"
 
-static unsigned int DIMS = 4;
+using Volume = Vector<4, int>;
 
 class VertexArray
 {
 protected:
-	std::vector<double*> points;
+	std::vector<VectorND> points;
 	std::vector<std::vector<int>> lines;
-	std::vector<int*> volumes;
+	std::vector<Volume> volumes;
 
 public:
 	VertexArray() {}
@@ -18,25 +19,24 @@ public:
 		addAll(arr);
 	}
 
-	void add(double* point) {
+	void add(VectorND point) {
 		points.push_back(point);
 		lines.resize(points.size());
 	}
 
-	double* get(int point_index) {
+	VectorND& get(int point_index) {
 		return points.at(point_index);
 	}
 
 	void addAll(VertexArray& arr) {
 		for (int i = 0; i < arr.getSize(); i++) {
-			points.push_back(copyPoint(arr.get(i)));
+			points.push_back(VectorND(arr.get(i)));
 			lines.push_back(std::vector<int>(arr.getConnections(i)));
 		}
 
 		int old_length = getSize();
 		for (auto volume : arr.volumes) {
-			int* cvolume = new int[4];
-			std::copy(volume, volume + 4, cvolume);
+			Volume cvolume(volume);
 			for (int i = 0; i < 4; i++) {
 				cvolume[i] += old_length;
 			}
@@ -53,8 +53,12 @@ public:
 		return points.size();
 	}
 
-	std::vector <int*> getVolumes() {
+	std::vector <Volume>& getVolumes() {
 		return volumes;
+	}
+
+	void addVolume(Volume v) {
+		volumes.push_back(v);
 	}
 
 	void connect(int point1, int point2) {
@@ -62,7 +66,7 @@ public:
 	}
 
 	void move(unsigned int axis, double value) {
-		if (axis >= DIMS) return;
+		if (axis >= MAX_DIMS) return;
 		for (int i = 0; i < points.size(); i++) {
 			points.at(i)[axis] += value;
 		}
@@ -73,27 +77,11 @@ public:
 			double &a = points.at(i)[axis1];
 			double &b = points.at(i)[axis2];
 			double range = sqrt(a * a + b * b);
+			if (range == 0) continue;
 			double cur_angle = acos(a / range) * (signbit(b) ? -1 : 1);
 			cur_angle += angle;
 			a = range * cos(cur_angle);
 			b = range * sin(cur_angle);
 		}
-	}
-
-	~VertexArray() {
-		for (int i = 0; i < points.size(); i++) {
-			delete[] points.at(i);
-		}
-		for (int i = 0; i < volumes.size(); i++) {
-			delete[] volumes.at(i);
-		}
-	}
-
-	static double* copyPoint(double* point) {
-		double* newPoint = new double[DIMS];
-		for (int i = 0; i < DIMS; i++) {
-			newPoint[i] = point[i];
-		}
-		return newPoint;
 	}
 };
