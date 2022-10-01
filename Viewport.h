@@ -135,18 +135,19 @@ public:
 				}
 				else {
 					all3D = false;
+					if (p1[3] > 0) continue;
 				}
-				for (int j = i+1; j < 4; j++) {
+				for (int j = 0; j < 4; j++) {
 					const VectorND& p2 = shape->get(vol[j]);
-					if (p1[3] * p2[3] >= 0) continue;
+					if (p2[3] <= 0) continue;
 
 					VectorND d = p2 - p1;
-					if (d[3] == 0) continue;
+					//if (d[3] == 0) continue;
 
 					VectorND r = d * (-(p1[3] / d[3])) + p1;
-					if (liesIn3D(r)) {
+					//if (liesIn3D(r)) {
 						dots.push_back((Vector3D)r);
-					}
+					//}
 				}
 			}
 			//now we've picked all points that are volume's intersection with our 3D hypersurface
@@ -169,8 +170,8 @@ public:
 					faces.push_back(dots[1]);
 					faces.push_back(dots[3]);
 					faces.push_back(dots[0]);
-					faces.push_back(dots[2]);
 					faces.push_back(dots[3]);
+					faces.push_back(dots[2]);
 				}
 			}
 		}
@@ -187,6 +188,7 @@ public:
 		}
 		glEnd();
 
+		/*//This can draw simply triangle polygons. I'll leave it here for some time
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glColor4ub(200, 200, 0, 64);
 		glBegin(GL_TRIANGLES);
@@ -194,8 +196,42 @@ public:
 			glVertex3dv(vertex.components);
 		}
 		glEnd();
+		*/
+		for (int i = 0; i < faces.size(); i += 3) {
+			Vector3D face[3]{ faces.at(i), faces.at(i + 1), faces.at(i + 2) };
+			Vector3D center = (face[0] + face[1] + face[2]) * (double(1)/3);
+			for (int i = 0; i < 3; i++) {
+				face[i] = center + (face[i] - center) * 0.85;
+			}
+			
+			glPointSize(1);
+			glColor4ub(220, 220, 0, 192);
+			glPolygonMode(GL_FRONT, GL_FILL);
+			glPolygonMode(GL_BACK, GL_POINT);
+			glBegin(GL_QUAD_STRIP);
+			for (int j = 0; j < 4; j++) {
+				int k = j % 3;
+				glVertex3dv(face[k].components);
+				glVertex3dv(faces.at(i + k).components);
+			}
+			glEnd();
+
+			glColor4ub(150, 150, 0, 192);
+			glPolygonMode(GL_FRONT, GL_POINT);
+			glPolygonMode(GL_BACK, GL_FILL);
+			glBegin(GL_QUAD_STRIP);
+			for (int j = 0; j < 4; j++) {
+				int k = j % 3;
+				glVertex3dv(face[k].components);
+				glVertex3dv(faces.at(i + k).components);
+			}
+			glEnd();
+			
+		}
 
 		applyTransform();
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 	void draw() {
