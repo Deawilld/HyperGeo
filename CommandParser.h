@@ -10,7 +10,9 @@ class CommandParser
 	enum CommandType{
 		NONE,
 		ROTATE,
-		MOVE
+		MOVE,
+		BUILD,
+		MODE
 	};
 
 protected:
@@ -19,6 +21,7 @@ protected:
 	int param_index = 0;
 	int max_params = 0;
 	int* param_buffer;
+	std::string param_string = "";
 	Viewport* vp;
 
 public:
@@ -77,6 +80,10 @@ protected:
 			std::cout << "Command: move" << std::endl;
 #endif //_DEBUG
 		}
+		else if (input_buffer == "mode") {
+			cmd = MODE;
+			max_params = 1;
+		}
 		else {
 			cmd = NONE;
 		}
@@ -95,7 +102,21 @@ protected:
 
 	void parseParam() {
 		if (input_buffer.length() == 0) return;
-		param_buffer[param_index - 1] = parseInt();
+		switch (cmd) {
+		case MOVE:
+		case ROTATE:
+			param_buffer[param_index - 1] = parseInt();
+			break;
+		case MODE:
+			param_string = input_buffer;
+		case BUILD:
+			if (param_index == 1) {
+				param_string = input_buffer;
+			}
+			else if (param_index == 2) {
+				param_buffer[0] = parseInt();
+			}
+		}
 		input_buffer = "";
 		param_index++;
 	}
@@ -118,8 +139,7 @@ protected:
 				output_bar = "Max " + std::to_string(MAX_DIMS) + " dimensions. Axis index must be from 0 to " + std::to_string(MAX_DIMS-1);
 				break;
 			}
-			float rhistory;
-			rhistory= vp->getRotationHistory();
+			output_bar = "Rotation " + std::to_string(vp->getRotationHistory()) + " was fixed. New axis set.";
 			vp->setRotationAxis(param_buffer[0], param_buffer[1]);
 			break;
 		case MOVE:
@@ -127,9 +147,25 @@ protected:
 				output_bar = "Max " + std::to_string(MAX_DIMS) + " dimensions. Axis index must be from 0 to " + std::to_string(MAX_DIMS - 1);
 				break;
 			}
-			float mhistory = vp->getMovementHistory();
+			output_bar = "Movement " + std::to_string(vp->getMovementHistory()) + " was fixed. New axis set.";
 			vp->setMoveAxis(param_buffer[0]);
 			break;
+		case MODE:
+			if (param_string == "cut") {
+				vp->projection = CUT;
+				output_bar = "Cut mode";
+			}
+			else if (param_string == "ortho" || param_string == "flat") {
+				vp->projection = ORTHO;
+				output_bar = "Ortho projection mode";
+			}
+			else if (param_string == "hyper" || param_string == "bihyper") {
+				vp->projection = BIHYPERBOLIC;
+				output_bar = "Bihyperbolic projection mode";
+			}
+			else {
+				output_bar = "No such mode '" + param_string + "'";
+			}
 		}
 
 #ifdef _DEBUG
@@ -147,6 +183,7 @@ protected:
 		param_index = 0;
 		max_params = 0;
 		cmd = NONE;
+		param_string = "";
 	}
 };
 

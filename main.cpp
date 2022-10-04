@@ -153,7 +153,6 @@ int main(int argc, char** argv) {
 					char c;
 					sf::Utf32::encodeAnsi(event.text.unicode, &c);
 					if (c != 0) {
-						std::cout << int(c) << std::endl;
 						cmdparser.input(c);
 					}
 					break;
@@ -212,21 +211,6 @@ void initGLWindow() {
 
 	glClearColor(0.0, 0.0, 1.0, 1.0);
 }
-
-/*void drawScene() {
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glColor4b(255, 255, 255, 255);
-	for (int i = 0; i < testArray.getSize(); i++) {
-		for (int j = 0; j < testArray.getConnections(i).size(); j++) {
-			double* point = testArray.get(i);
-			glVertex3d(point[0], point[1], point[2]);
-			point = testArray.get(testArray.getConnections(i).at(j)+i);
-			glVertex3d(point[0], point[1], point[2]);
-		}
-	}
-	glEnd();
-}*/
 
 void mouseDown(sf::Event::MouseButtonEvent event) {
 	if (event.button == sf::Mouse::Left) {

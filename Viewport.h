@@ -1,6 +1,9 @@
 #include "VertexArray.h"
 #include "SFML/OpenGL.hpp"
 #include <string>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #ifdef _DEBUG
 #include <iostream>
 #endif
@@ -90,7 +93,7 @@ public:
 			}
 		}
 
-		glLineWidth(2);
+		glLineWidth(3);
 		glBegin(GL_LINES);
 		glColor3ub(0, 255, 0);
 		for (int v1 = 0; v1 < shape->getSize(); v1++) {
@@ -315,12 +318,20 @@ public:
 		value *= movement_direction;
 		shape->move(movement_axis, value);
 		movement_history += value;
+		updateStatusBar();
 	}
 
 	void rotateArray(double value) {
 		value *= rotation_direction;
 		shape->rotate(rotation_axis[0], rotation_axis[1], value);
 		rotation_history += value;
+		if (rotation_history > M_PI) {
+			rotation_history -= 2*M_PI;
+		}
+		else if (rotation_history < -M_PI) {
+			rotation_history += 2*M_PI;
+		}
+		updateStatusBar();
 	}
 };
 
