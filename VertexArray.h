@@ -29,12 +29,13 @@ public:
 	}
 
 	void addAll(VertexArray& arr) {
+		int old_length = getSize();
+
 		for (int i = 0; i < arr.getSize(); i++) {
 			points.push_back(VectorND(arr.get(i)));
 			lines.push_back(std::vector<int>(arr.getConnections(i)));
 		}
 
-		int old_length = getSize();
 		for (auto volume : arr.volumes) {
 			Volume cvolume(volume);
 			for (int i = 0; i < 4; i++) {

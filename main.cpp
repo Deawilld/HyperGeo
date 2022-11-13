@@ -33,6 +33,7 @@ void drawScene();
 void mouseDown(sf::Event::MouseButtonEvent);
 void mouseMove(sf::Event::MouseMoveEvent);
 
+
 void buildTestCube(const int dims) {
 	double size = 1;
 	VectorND p;
@@ -49,7 +50,35 @@ void buildTestCube(const int dims) {
 		for (int i = 0; i < testArray.getSize(); i++) {
 			testArray.connect(i, i + testArray.getSize());
 		}
+		int volSize = testArray.getVolumes().size();
 		testArray.addAll(copy);
+
+		if (dim == 2) {
+			testArray.addVolume(Volume{ 0, 3, 5, 6 });
+			testArray.addVolume(Volume{ 4, 0, 5, 6 });
+			testArray.addVolume(Volume{ 1, 0, 3, 5 });
+			testArray.addVolume(Volume{ 2, 0, 3, 6 });
+			testArray.addVolume(Volume{ 7, 3, 6, 5 });
+		}
+		else if (dim > 2) {
+			for (int i = 0; i < volSize; i++) {
+				//Each side of a tetrahedron is a triangle.
+				//Each triandle when shifted forms a triangle prism.
+				//For each side we fill the prism with a pre-counted way.
+				for (uint8_t j = 0; j < 4; j++) {
+					int map[3];
+					for (int k = 0; k < 3; k++) {
+						map[k] = k < j ? k : k + 1;
+					}
+
+					Volume v = testArray.getVolumes().at(i);
+					Volume u = testArray.getVolumes().at(i + volSize);
+					testArray.addVolume(Volume{ v[map[0]], v[map[1]], v[map[2]], u[map[0]] });
+					testArray.addVolume(Volume{ v[map[1]], u[map[1]], u[map[2]], u[map[0]] });
+					testArray.addVolume(Volume{ v[map[2]], u[map[2]], v[map[1]], u[map[0]] });
+				}
+			}
+		}
 	}
 }
 
@@ -103,7 +132,7 @@ int main(int argc, char** argv) {
 	text_command_out.setPosition(20, 75);
 	text_vp_status.setPosition(20, 5);
 
-	buildTetraedr(4);
+	buildTestCube(4);
 	viewport.shape = &testArray;
 
 	viewport.draw();
