@@ -108,6 +108,7 @@ public:
 		}
 	}
 
+	//Can produce invalid result!
 	void erase(int index) {
 		points.erase(points.begin()+index);
 		lines.erase(lines.begin()+index);
