@@ -19,6 +19,10 @@ public:
 		addAll(arr);
 	}
 
+	VertexArray(VertexArray& arr, int start, int end) {
+		add(arr, start, end);
+	}
+
 	void add(VectorND point) {
 		points.push_back(point);
 		lines.resize(points.size());
@@ -28,14 +32,20 @@ public:
 		return points.at(point_index);
 	}
 
-	void addAll(VertexArray& arr) {
+	//does not copy volumes!
+	//No bounds checking!
+	void add(VertexArray& arr, int start, int end) {
 		int old_length = getSize();
 
-		for (int i = 0; i < arr.getSize(); i++) {
+		for (int i = start; i < end; i++) {
 			points.push_back(VectorND(arr.get(i)));
 			lines.push_back(std::vector<int>(arr.getConnections(i)));
 		}
+	}
 
+	void addAll(VertexArray& arr) {
+		int old_length = getSize();
+		add(arr, 0, arr.getSize());
 		for (auto volume : arr.volumes) {
 			Volume cvolume(volume);
 			for (int i = 0; i < 4; i++) {
@@ -84,5 +94,22 @@ public:
 			a = range * cos(cur_angle);
 			b = range * sin(cur_angle);
 		}
+	}
+
+	void scale(double factor) {
+		for (VectorND& point : points) {
+			point *= factor;
+		}
+	}
+
+	void scale(int axis, double factor) {
+		for (VectorND& point : points) {
+			point[axis] *= factor;
+		}
+	}
+
+	void erase(int index) {
+		points.erase(points.begin()+index);
+		lines.erase(lines.begin()+index);
 	}
 };
