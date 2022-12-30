@@ -20,8 +20,8 @@ public:
 
 	Vector(std::initializer_list<T> vals) {
 		auto it = vals.begin();
-		for (int i = 0; i < size; i++) {
-			components[i] = i < vals.size() ? *it : 0;
+		for (int i = 0; i < std::min(size, (int)vals.size()); i++) {
+			components[i] = *it;
 			it++;
 		}
 	}

@@ -35,10 +35,9 @@ void drawScene();
 void mouseDown(sf::Event::MouseButtonEvent);
 void mouseMove(sf::Event::MouseMoveEvent);
 
-//shape_generators.cpp
 void buildTestCube(VertexArray& array, const int dims);
 void buildTetraedr(VertexArray& array, const int dims);
-void buildSphere(VertexArray& array, const int dims);
+
 
 
 int main(int argc, char** argv) {
@@ -61,7 +60,7 @@ int main(int argc, char** argv) {
 	text_command_out.setPosition(20, 75);
 	text_vp_status.setPosition(20, 5);
 
-	buildSphere(testArray, 4);
+	buildTestCube(testArray, 4);
 	viewport.shape = &testArray;
 
 	viewport.draw();

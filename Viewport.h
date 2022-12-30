@@ -22,7 +22,7 @@ class Viewport
 public:
 	VertexArray* shape;
 
-	Projection_type projection = ORTHO;
+	Projection_type projection = CUT;
 
 	float yaw=0, pitch=0;
 	
