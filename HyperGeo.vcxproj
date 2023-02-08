@@ -151,8 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gui\GUISprite.cpp" />
-    <ClCompile Include="gui\Layout.cpp" />
     <ClCompile Include="main.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\George\Documents\CppProjects\LIB\SFML-2.5.1\include</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\George\Documents\CppProjects\LIB\SFML-2.5.1\include</AdditionalIncludeDirectories>
@@ -163,9 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandParser.h" />
-    <ClInclude Include="gui\GUISprite.h" />
-    <ClInclude Include="gui\Rect.h" />
-    <ClInclude Include="gui\Layout.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VertexArray.h" />
     <ClInclude Include="Viewport.h" />

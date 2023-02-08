@@ -83,9 +83,9 @@ void buildTetraedr(VertexArray& array, const int dims) {
 	}
 }
 
-void buildSphere(VertexArray& array, int dims) {
+void buildSphere(VertexArray& array, const int dims) {
 	array.add(VectorND());
-	float R = 1;
+	float R = 0.5;
 	VectorND A;
 	A[0] = R;
 	VectorND B;
@@ -113,7 +113,7 @@ void buildSphere(VertexArray& array, int dims) {
 		VectorND P;
 		P[d] = R;
 		array.add(P);
-		for (int i = array.getSize() - baseSize - 1; i < array.getSize()-1; i++) {
+		for (int i = array.getSize() - baseSize - 1; i < array.getSize() - 1; i++) {
 			array.connect(i, array.getSize() - 1);
 		}
 
@@ -125,5 +125,24 @@ void buildSphere(VertexArray& array, int dims) {
 			array.connect(i + 1, p);
 			p++;
 		}
+	}
+}
+
+void buildKleinBottle(VertexArray& array, const int dims) {
+	VertexArray sphere;
+	buildSphere(sphere, dims - 2);
+	int size = sphere.getSize();
+
+	int steps = 10;
+	float flip_angle = M_PI / 10;
+	float step_angle = flip_angle * 2;
+	float R = 2;
+
+	for (int i = 0; i < steps; i++) {
+		VertexArray copy(sphere);
+		copy.move(0, R);
+		copy.rotate(0, dims-2, i*step_angle);
+		array.addAll(copy);
+		sphere.rotate(0, dims-1, flip_angle);
 	}
 }

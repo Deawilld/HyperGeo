@@ -118,5 +118,5 @@ public:
 	}
 };
 using Vector3D = Vector<3>;
-static const int MAX_DIMS = 4;
+static const int MAX_DIMS = 5;
 using VectorND = Vector<MAX_DIMS>;

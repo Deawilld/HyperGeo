@@ -5,6 +5,10 @@
 #endif //_DEBUG
 #pragma once
 
+void buildTestCube(VertexArray& array, const int dims);
+void buildTetraedr(VertexArray& array, const int dims);
+void buildSphere(VertexArray& array, const int dims);
+
 class CommandParser
 {
 	enum CommandType{
@@ -69,6 +73,7 @@ protected:
 		if (input_buffer == "r") {
 			cmd = ROTATE;
 			max_params = 2;
+			output_bar = "rotate[axis1, axis2]";
 #ifdef _DEBUG
 			std::cout << "Command: rotate" << std::endl;
 #endif //_DEBUG
@@ -76,6 +81,7 @@ protected:
 		else if (input_buffer == "m") {
 			cmd = MOVE;
 			max_params = 1;
+			output_bar = "move[axis]";
 #ifdef _DEBUG
 			std::cout << "Command: move" << std::endl;
 #endif //_DEBUG
@@ -83,6 +89,12 @@ protected:
 		else if (input_buffer == "mode") {
 			cmd = MODE;
 			max_params = 1;
+			output_bar = "<ortho|hyper|cut>";
+		}
+		else if (input_buffer == "build") {
+			cmd = BUILD;
+			max_params = 2;
+			output_bar = "<cube|tetr|sphere>";
 		}
 		else {
 			cmd = NONE;
@@ -109,9 +121,11 @@ protected:
 			break;
 		case MODE:
 			param_string = input_buffer;
+			break;
 		case BUILD:
 			if (param_index == 1) {
 				param_string = input_buffer;
+				output_bar = "<dim: 1.." + std::to_string(MAX_DIMS) + ">";
 			}
 			else if (param_index == 2) {
 				param_buffer[0] = parseInt();
@@ -166,6 +180,25 @@ protected:
 			else {
 				output_bar = "No such mode '" + param_string + "'";
 			}
+			break;
+		case BUILD:
+			if (param_buffer[0] > MAX_DIMS || param_buffer[0] < 1) {
+				output_bar = "Invalid dimension number. Must be from 1 to " + std::to_string(MAX_DIMS);
+				break;
+			}
+			*vp->shape = VertexArray();
+			if (param_string == "cube") {
+				buildTestCube(*vp->shape, param_buffer[0]);
+			}else if (param_string == "tetr") {
+				buildTetraedr(*vp->shape, param_buffer[0]);
+			}
+			else if (param_string == "sphere") {
+				buildSphere(*vp->shape, param_buffer[0]);
+			}
+			else {
+				output_bar = "Can't recognize such shape!";
+			}
+			break;
 		}
 
 #ifdef _DEBUG
