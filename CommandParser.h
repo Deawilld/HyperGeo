@@ -8,6 +8,8 @@
 void buildTestCube(VertexArray& array, const int dims);
 void buildTetraedr(VertexArray& array, const int dims);
 void buildSphere(VertexArray& array, const int dims);
+void buildKleinBottle(VertexArray& array, const int dims);
+
 
 class CommandParser
 {
@@ -98,6 +100,7 @@ protected:
 		}
 		else {
 			cmd = NONE;
+			output_bar = "unknown command";
 		}
 
 #ifdef _DEBUG
@@ -194,6 +197,9 @@ protected:
 			}
 			else if (param_string == "sphere") {
 				buildSphere(*vp->shape, param_buffer[0]);
+			}
+			else if (param_string == "klein") {
+				buildKleinBottle(*vp->shape, param_buffer[0]);
 			}
 			else {
 				output_bar = "Can't recognize such shape!";

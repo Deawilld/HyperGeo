@@ -22,7 +22,7 @@ class Viewport
 public:
 	VertexArray* shape;
 
-	Projection_type projection = ORTHO;
+	Projection_type projection = BIHYPERBOLIC;
 
 	float yaw=0, pitch=0;
 	
@@ -32,7 +32,7 @@ public:
 protected:
 	float rotation_history = 0;
 	float movement_history = 0;
-	int rotation_axis[2]{ 0, 1 };
+	int rotation_axis[2]{ 0, 3 };
 	int movement_axis = 3;
 
 public:
@@ -45,6 +45,9 @@ public:
 		glLoadIdentity();
 		glTranslatef(0, 0, -2);
 		glPushMatrix();
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
 
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -68,7 +71,7 @@ public:
 	}
 
 	void drawProjection() {
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		double minw=shape->get(0)[3], maxw=shape->get(0)[3];
 		Vector3D* points = new Vector3D[shape->getSize()];
@@ -93,6 +96,7 @@ public:
 			}
 		}
 
+		glDisable(GL_DEPTH_TEST);
 		glLineWidth(3);
 		glBegin(GL_LINES);
 		glColor3ub(0, 255, 0);
@@ -123,7 +127,7 @@ public:
 	}
 
 	void drawCut() {
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		std::vector<Vector3D> faces;
 		std::vector<Volume>& volumes = shape->getVolumes();
@@ -181,6 +185,7 @@ public:
 
 		glDisable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -191,15 +196,18 @@ public:
 		}
 		glEnd();
 
-		/*//This can draw simply triangle polygons. I'll leave it here for some time
+		//This can draw simply triangle polygons. I'll leave it here for some time
+		/*
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glColor4ub(200, 200, 0, 64);
+		glColor4ub(200, 200, 0, 255);
 		glBegin(GL_TRIANGLES);
 		for (Vector3D& vertex : faces) {
 			glVertex3dv(vertex.components);
 		}
 		glEnd();
 		*/
+		
+		
 		for (int i = 0; i < faces.size(); i += 3) {
 			Vector3D face[3]{ faces.at(i), faces.at(i + 1), faces.at(i + 2) };
 			Vector3D center = (face[0] + face[1] + face[2]) * (double(1)/3);
@@ -208,9 +216,9 @@ public:
 			}
 			
 			glPointSize(1);
-			glColor4ub(220, 220, 0, 192);
-			glPolygonMode(GL_FRONT, GL_FILL);
-			glPolygonMode(GL_BACK, GL_POINT);
+			glColor4ub(150, 150, 0, 255);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			//glPolygonMode(GL_BACK, GL_POINT);
 			glBegin(GL_QUAD_STRIP);
 			for (int j = 0; j < 4; j++) {
 				int k = j % 3;
@@ -219,7 +227,15 @@ public:
 			}
 			glEnd();
 
-			glColor4ub(150, 150, 0, 192);
+			glColor4ub(200, 200, 0, 255);
+			glBegin(GL_TRIANGLES);
+			for (Vector3D &vertex : face) {
+				glVertex3dv(vertex.components);
+			}
+			glEnd();
+
+			/*
+			//glColor4ub(200, 200, 0, 128);
 			glPolygonMode(GL_FRONT, GL_POINT);
 			glPolygonMode(GL_BACK, GL_FILL);
 			glBegin(GL_QUAD_STRIP);
@@ -229,8 +245,9 @@ public:
 				glVertex3dv(faces.at(i + k).components);
 			}
 			glEnd();
-			
+			*/
 		}
+		
 
 		applyTransform();
 

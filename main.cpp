@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
 		std::cout << "Failed to load the font!";
 	}
 
-	window.create(sf::VideoMode(800, 600), "HyperGeo", sf::Style::Default);
+	window.create(sf::VideoMode(800, 600), "HyperGeo", sf::Style::Default,
+		sf::ContextSettings(24, 0, 0));
 	window.setVerticalSyncEnabled(true);
 	window.setActive(true);
 	viewport.setup();
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
 	text_command_out.setPosition(20, 75);
 	text_vp_status.setPosition(20, 5);
 
-	buildKleinBottle(testArray, 4);
+	buildTestCube(testArray, 4);
 	viewport.shape = &testArray;
 	
 	viewport.draw();

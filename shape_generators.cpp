@@ -126,6 +126,8 @@ void buildSphere(VertexArray& array, const int dims) {
 			p++;
 		}
 	}
+
+	if (dims == 1) array.connect(1, 2);
 }
 
 void buildKleinBottle(VertexArray& array, const int dims) {
@@ -143,6 +145,19 @@ void buildKleinBottle(VertexArray& array, const int dims) {
 		copy.move(0, R);
 		copy.rotate(0, dims-2, i*step_angle);
 		array.addAll(copy);
+
+		int pa = i * size;
+		int pb = ((i + 1) % steps) * size;
+		for(int j=1; j < size; j++){
+			if (pb == 0) {
+				array.connect(pa + j, ((j+(size-1)>>1) % (size-1)) + 1);
+			}
+			else {
+				array.connect(pa + j, pb + j);
+
+			}
+		}
+
 		sphere.rotate(0, dims-1, flip_angle);
 	}
 }
